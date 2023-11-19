@@ -13,20 +13,21 @@
 <body class="bg-light">
 <div class="container-fluid">
   <div class="d-flex flex-column flex-md-row p-3 px-md-4 mb-3  bg-white border-bottom box-shadow">
-      <h5 class="mr-md-auto p-2">Design.pro</h5>
+      <a href="{% url 'serv:index' %}"><h5 class="mr-md-auto p-2">Design.pro</h5></a>
+      {% if user.is_authenticated %}
       <div class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Профиль</a>
           <div class="dropdown-menu">
-              <a class="dropdown-item" href="#">Мои заявки</a>
-              <a class="dropdown-item" href="#">Изменить личные данные</a>
-              <a class="dropdown-item" href="#">Изменить пароль</a>
+              <a class="dropdown-item" href="{% url 'serv:profile' %}">Мои заявки</a>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Выйти</a>
+              <a class="dropdown-item" href="{% url 'serv:logout' %}">Выйти</a>
               <div class="dropdown-divider"></div>
           </div>
       </div>
-      <a class="p-2 text-dark" href="#">Регистрация</a>
-      <a class="p-2 text-dark" href="#">Вход</a>
+      {% else %}
+      <a class="p-2 text-dark" href="{% url 'serv:register' %}">Регистрация</a>
+      <a class="p-2 text-dark" href="{% url 'serv:login' %}">Вход</a>
+      {% endif %}
   </div>
   <div class="row">
 

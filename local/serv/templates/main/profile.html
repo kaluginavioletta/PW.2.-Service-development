@@ -1,0 +1,37 @@
+{% extends "layout/basic.html" %}
+
+
+{% load bootstrap4 %}
+
+
+{% block title %} Профиль пользователя {% endblock %}
+
+
+{% block content %}
+<h2>Профиль пользователя {{ user.username }}</h2>
+{% if user.first_name and user.last_name %}
+<p>Здравствуйте, {{ user.first_name }} {{ user.last_name }} </p>
+{% else %}
+<p>Здравствуйте! </p>
+<form method="post">
+    {% csrf_token %}
+    {{ form }}
+</form>
+{% endif %}
+<h3>Ваши заявки</h3>
+<button type="button" class="btn btn-outline-primary"><a href="{% url 'serv:profile_request_add' %}">Добавить</a></button>
+  {% for request in design_requests %}
+    <div class="card" style="width: 18rem;">
+      <div class="card-body">
+        <p>Описание: {{ request.desc }}</p>
+        <p class="card-text">Дата: {{ request.timestamp }}</p>
+        <p class="card-text">Название: {{ request.title }}</p>
+        <p class="card-text">Категория заявки: {{ request.category }}</p>
+        <p class="card-text">Статус: {{ request.status }}</p>
+        <button type="button" class="btn btn-outline-danger"><a href="{% url 'serv:profile_request_delete' %}">Удалить</a></button>
+      </div>
+    </div>
+  {% empty %}
+    <p>Нет доступных заявок</p>
+  {% endfor %}
+{% endblock %}

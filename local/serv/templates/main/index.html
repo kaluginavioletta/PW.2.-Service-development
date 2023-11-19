@@ -1,6 +1,17 @@
 {% extends "layout/basic.html" %}
 
-
 {% block content %}
   <h2>Последние 4 заявки</h2>
+  {% for request in design_requests %}
+    <div class="card" style="width: 18rem;">
+        <img src="{{ request.photo.url }}" alt="{{ design_request.title }}" class="card-img-top">
+      <div class="card-body">
+        <p class="card-text">Дата: {{ request.timestamp }}</p>
+        <p class="card-text">Название: {{ request.title }}</p>
+        <p class="card-text">Категория заявки: {{ request.category }}</p>
+      </div>
+    </div>
+  {% empty %}
+    <p>Нет доступных заявок</p>
+  {% endfor %}
 {% endblock %}
