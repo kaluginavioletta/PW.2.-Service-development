@@ -4,15 +4,19 @@
 {% load bootstrap4 %}
 
 
-{% block title %} Добавление объявления {% endblock %}
+{% block title %} Удаление заявки {% endblock %}
 
 
 {% block content %}
-<h2>Добавление объявления</h2>
-<form method="post" enctype="multipart/form-data">
-   {% csrf_token %}
-   {% bootstrap_form form layout='horizontal' %}
-   {% bootstrap_formset formset layout='horizontal' %}
-   {% buttons submit='Удалить' %} {% endbuttons %}
+<h2>Удаление заявки "{{ object.title }}"</h2>
+{% if object.status == 'Новый' %}
+   <p>Вы уверены, что хотите удалить эту заявку?</p>
+<form method="post">
+    {% csrf_token %}
+    {% buttons submit='Удалить' %} {% endbuttons %}
 </form>
+{% else %}
+    <p>Нельзя удалять заявки со статусом, отличным от "Новый"</p>
+    <a href="{% url 'serv:profile' %}">Вернуться к заявкам</a>
+{% endif %}
 {% endblock %}

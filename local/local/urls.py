@@ -23,6 +23,7 @@ from django.conf import settings
 from django.views.decorators.cache import never_cache
 from django.views.static import serve
 
+app_name = 'serv'
 
 urlpatterns = [
    path('admin/', admin.site.urls),

@@ -1,0 +1,10 @@
+{% extends "layout/basic.html" %}
+
+{% block content %}
+  <h1>Список категорий</h1>
+  <ul>
+    {% for category in categories %}
+      <li>{{ category.name }}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

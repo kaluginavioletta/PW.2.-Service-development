@@ -1,25 +1,27 @@
-from django.contrib.auth import password_validation
+from django.contrib.auth import password_validation, authenticate
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core.exceptions import ValidationError
 from django import forms
+from django.urls import reverse_lazy, reverse
 
-from .models import ServUser, DesignRequest
+from .models import ServUser, DesignRequest, Category
 
+class LoginUserForm(AuthenticationForm):
+    username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-input'}))
+    password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
 
 class RegisterUserForm(forms.ModelForm):
    class Meta:
        model = ServUser
-       fields = ('surname', 'name', 'patronymic', 'username', 'email', 'password1', 'password2', 'consent')
+       fields = ['surname', 'name', 'patronymic', 'username', 'email', 'password', 'password2', 'consent']
 
    email = forms.EmailField(required=True,
                             label='Адрес электронной почты')
-   password1 = forms.CharField(label='Пароль',
-                               widget=forms.PasswordInput,
-                               help_text=password_validation.password_validators_help_text_html())
+   password = forms.CharField(label='Пароль',
+                               widget=forms.PasswordInput)
    password2 = forms.CharField(label='Пароль (повторно)',
                                widget=forms.PasswordInput,
                                help_text='Повторите тот же самый пароль еще раз')
-
-
 
 
    def clean_surname(self):
@@ -54,19 +56,11 @@ class RegisterUserForm(forms.ModelForm):
            raise forms.ValidationError("Пользователь с таким почтовым адресом уже существует")
        return email
 
-   def clean_password1(self):
-       if 'password1' in self.cleaned_data:
-           password1 = self.cleaned_data['password1']
-           if password1:
-               password_validation.validate_password(password1)
-           return password1
-       return ''
-
    def clean(self):
        super().clean()
-       password1 = self.cleaned_data.get('password1')
+       password = self.cleaned_data.get('password')
        password2 = self.cleaned_data.get('password2')
-       if password1 and password2 and password1 != password2:
+       if password and password2 and password != password2:
            self.add_error('password2', ValidationError(
                'Введенные пароли не совпадают', code='password_mismatch'
            ))
@@ -74,17 +68,38 @@ class RegisterUserForm(forms.ModelForm):
 
    def save(self, commit=True):
        user = super().save(commit=False)
-       if 'password1' in self.cleaned_data:
-           user.set_password(self.cleaned_data['password1'])
+       if 'password' in self.cleaned_data:
+           user.set_password(self.cleaned_data['password'])
        user.is_active = False
        user.is_activated = False
        if commit:
            user.save()
        return user
 
+class ChangeStatus(forms.ModelForm):
+    class Meta:
+        model = DesignRequest
+        fields = ['status']
 
 class RequestForm(forms.ModelForm):
-   class Meta:
+    user = forms.HiddenInput()
+    class Meta:
        model = DesignRequest
        fields = ['title', 'category', 'desc', 'photo']
-       widgets = {'author': forms.HiddenInput}
+       def save(self, commit=True, user=None):
+           request = super().save(commit=False)
+           request.user = user
+           if commit:
+               request.save()
+           return request
+
+
+# class ChangeRequestForm(forms.ModelForm):
+#     class Meta:
+#         model = DesignRequest
+#         fields = ['status', 'comment', 'photo']
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ['category_title']

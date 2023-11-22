@@ -8,10 +8,20 @@
 
 
 {% block content %}
-<h2>Добавление объявления</h2>
+<h2>Добавление заявки</h2>
 <form method="post" enctype="multipart/form-data">
    {% csrf_token %}
    {% bootstrap_form form layout='horizontal' %}
    {% buttons submit='Добавить' %} {% endbuttons %}
 </form>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 {% endblock %}
+

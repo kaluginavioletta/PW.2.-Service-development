@@ -1,37 +1,96 @@
 {% extends "layout/basic.html" %}
 
-
 {% load bootstrap4 %}
-
 
 {% block title %} Профиль пользователя {% endblock %}
 
-
 {% block content %}
 <h2>Профиль пользователя {{ user.username }}</h2>
-{% if user.first_name and user.last_name %}
-<p>Здравствуйте, {{ user.first_name }} {{ user.last_name }} </p>
+{% if user.surname and user.name %}
+<p>Здравствуйте, {{ user.surname }} {{ user.name }} </p>
 {% else %}
-<p>Здравствуйте! </p>
-<form method="post">
-    {% csrf_token %}
-    {{ form }}
-</form>
+<p>Здравствуйте!</p>
 {% endif %}
+<button type="button" class="btn btn-outline-primary"><a href="{% url 'serv:request_add' %}">Добавить</a></button>
 <h3>Ваши заявки</h3>
-<button type="button" class="btn btn-outline-primary"><a href="{% url 'serv:profile_request_add' %}">Добавить</a></button>
-  {% for request in design_requests %}
+
+<h3>Статус:</h3>
+<form method="GET">
+    <select class="dropdown-item" name="status">
+        <option value="">Все</option>
+        <option value="Новый">Новый</option>
+        <option value="Принято в работу">Принято в работу</option>
+        <option value="Выполнено">Выполнено</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Фильтровать</button>
+</form>
+
+{% if status == 'Новый' %}
+    <h2>Новые заявки</h2>
+    {% for request in design_requests %}
+    {% if request.status == 'Новый' %}
     <div class="card" style="width: 18rem;">
-      <div class="card-body">
-        <p>Описание: {{ request.desc }}</p>
-        <p class="card-text">Дата: {{ request.timestamp }}</p>
-        <p class="card-text">Название: {{ request.title }}</p>
-        <p class="card-text">Категория заявки: {{ request.category }}</p>
-        <p class="card-text">Статус: {{ request.status }}</p>
-        <button type="button" class="btn btn-outline-danger"><a href="{% url 'serv:profile_request_delete' %}">Удалить</a></button>
-      </div>
+        <div class="card-body">
+            <p class="card-text">Дата: {{ request.timestamp }}</p>
+            <p class="card-text">Название: {{ request.title }}</p>
+            <p>Описание: {{ request.desc }}</p>
+            <p class="card-text">Категория заявки: {{ request.category }}</p>
+            <p class="card-text">Статус: {{ request.status }}</p>
+
+            <button type="button" class="btn btn-outline-danger"><a href="{% url 'serv:profile_request_delete' id=request.id %}">Удалить</a></button>
+        </div>
     </div>
-  {% empty %}
-    <p>Нет доступных заявок</p>
-  {% endfor %}
+    {% endif %}
+    {% endfor %}
+{% elif status == 'Принято в работу' %}
+    <h2>Принятые в работу</h2>
+    {% for request in design_requests %}
+    {% if request.status == 'Принято в работу' %}
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <p class="card-text">Дата: {{ request.timestamp }}</p>
+            <p class="card-text">Название: {{ request.title }}</p>
+            <p>Описание: {{ request.desc }}</p>
+            <p class="card-text">Категория заявки: {{ request.category }}</p>
+            <p class="card-text">Статус: {{ request.status }}</p>
+
+            <button type="button" class="btn btn-outline-danger"><a href="{% url 'serv:profile_request_delete' id=request.id %}">Удалить</a></button>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+{% elif status == 'Выполнено' %}
+    <h2>Выполненные заявки</h2>
+    {% for request in design_requests %}
+    {% if request.status == 'Выполнено' %}
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <p class="card-text">Дата: {{ request.timestamp }}</p>
+            <p class="card-text">Название: {{ request.title }}</p>
+            <p>Описание: {{ request.desc }}</p>
+            <p class="card-text">Категория заявки: {{ request.category }}</p>
+            <p class="card-text">Статус: {{ request.status }}</p>
+
+            <button type="button" class="btn btn-outline-danger"><a href="{% url 'serv:profile_request_delete' id=request.id %}">Удалить</a></button>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+{% else %}
+    <h2>Все заявки</h2>
+    {% for request in design_requests %}
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <p>Описание: {{ request.desc }}</p>
+            <p class="card-text">Дата: {{ request.timestamp }}</p>
+            <p class="card-text">Название: {{ request.title }}</p>
+            <p class="card-text">Описание: {{ request.desc }}</p>
+            <p class="card-text">Категория заявки: {{ request.category }}</p>
+            <p class="card-text">Статус: {{ request.status }}</p>
+
+            <button type="button" class="btn btn-outline-danger"><a href="{% url 'serv:profile_request_delete' id=request.id %}">Удалить</a></button>
+        </div>
+    </div>
+    {% endfor %}
+{% endif %}
 {% endblock %}

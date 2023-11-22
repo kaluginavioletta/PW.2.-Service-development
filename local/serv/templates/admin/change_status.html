@@ -1,0 +1,10 @@
+{% extends "layout/basic.html" %}
+
+{% block content %}
+  <h1>Изменение статуса заявки {{ request.id }}</h1>
+  <form method="post" action="{% url 'change_status' request.id %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Сохранить">
+  </form>
+{% endblock %}
