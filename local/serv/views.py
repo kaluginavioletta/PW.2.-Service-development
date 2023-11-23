@@ -28,7 +28,8 @@ from .models import DesignRequest, ServUser, Category
 def index(request):
     design_requests = DesignRequest.objects.filter(status='Выполнено').order_by('-timestamp')[:4]
     in_progress_count = DesignRequest.objects.filter(status='Принято в работу').count()
-    return render(request, 'main/index.html', {'design_requests': design_requests, 'in_progress_count': in_progress_count})
+    return render(request, 'main/index.html', {'design_requests': design_requests,
+                                               'in_progress_count': in_progress_count})
 
 
 class LoginUser(ServUser, LoginView):
@@ -49,7 +50,6 @@ def register(request):
     if request.method == 'POST':
         form = RegisterUserForm(request.POST)
         if form.is_valid():
-            # Create User object
             ServUser.objects.create_user(
                 username=form.cleaned_data['username'],
                 password=form.cleaned_data['password'],
@@ -87,7 +87,7 @@ def request_add(request):
 class DeleteRequestView(LoginRequiredMixin, DeleteView):
    pk_url_kwarg = 'id'
    model = DesignRequest
-   template_name = 'requests/profile_request_delete.html'
+   template_name = 'requests/category_delete.html'
    success_url = reverse_lazy('serv:profile')
 
 @login_required
@@ -99,9 +99,10 @@ def request_detail(request, id):
     req = get_object_or_404(DesignRequest, id=id)
     return render(request, 'admin/request_detail.html', {'request': req})
 
-def change_status(request, request_id):
-    design_request = get_object_or_404(DesignRequest, request_id=request_id)
-    if design_request.status == 'Новая':
+
+def change_status(request):
+    design_request = DesignRequest.objects.filter(status='Новая').first()
+    if design_request:
         if request.method == 'POST':
             form = ChangeStatus(request.POST, request.FILES)
             if form.is_valid():
@@ -109,31 +110,34 @@ def change_status(request, request_id):
                 design_request.photo = form.cleaned_data['photo']
                 design_request.save()
                 messages.success(request, 'Статус заявки изменен на "Выполнено"')
-                return redirect('serv:profile')
+                return redirect('serv:change_status')
+            else:
+                form = ChangeStatus()
+            return render(request, 'admin/change_status.html', {'form': form})
         else:
-            form = RequestForm()
-        return render(request, 'requests/change_status_to_completed.html', {'form': form})
-    else:
-        messages.error(request, 'Нельзя изменить статус заявки с другим статусом')
-        return redirect('serv:profile')
+            messages.error(request, 'Нельзя изменить статус заявки с другим статусом')
+            return redirect('serv:change_status')
+
 
 
 
 def category_list(request):
     categories = Category.objects.all()
-    return render(request, 'category_list.html', {'categories': categories})
+    return render(request, 'admin/category_list.html', {'categories': categories})
 
 def add_category(request):
     if request.method == 'POST':
         form = CategoryForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('category_list')
+            return redirect('serv:category_list')
     else:
         form = CategoryForm()
     return render(request, 'admin/add_category.html', {'form': form})
 
-def delete_category(category_id):
-    category = get_object_or_404(Category, id=category_id)
-    category.delete()
-    return redirect('category_list')
+class DeleteCategoryView(LoginRequiredMixin, DeleteView):
+   pk_url_kwarg = 'id'
+   model = Category
+   template_name = 'admin/category_delete.html'
+   success_url = reverse_lazy('serv:category_list')
+

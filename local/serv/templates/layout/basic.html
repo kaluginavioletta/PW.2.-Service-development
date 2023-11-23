@@ -20,8 +20,8 @@
         <div class="dropdown-menu">
             <a class="dropdown-item" href="{% url 'serv:profile' %}">Мои заявки</a>
             {% if user.is_staff %}
-                <a class="dropdown-item" href="{% url 'serv:add_category' %}">Добавление категории</a>
-                <a class="dropdown-item" href="{% url 'serv:request_detail' %}">Статус заявки</a>
+                <a class="dropdown-item" href="{% url 'serv:category_list' %}">Список категорий</a>
+                <a class="dropdown-item" href="{% url 'serv:change_status' %}">Смена статуса</a>
             {% endif %}
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="{% url 'serv:logout' %}">Выйти</a>

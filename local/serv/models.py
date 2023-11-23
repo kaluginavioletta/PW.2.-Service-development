@@ -16,15 +16,11 @@ class ServUser(AbstractUser):
             raise ValidationError('Необходимо дать согласие на обработку персональных данных')
 
 
-from django.db.models.signals import pre_delete
-from django.dispatch import receiver
+# from django.db.models.signals import pre_delete
+# from django.dispatch import receiver
 
 class Category(models.Model):
     category_title = models.CharField(max_length=200, unique=True, help_text='Напишите категорию для дизайна интерьера')
-
-    # @receiver(pre_delete, sender='Category')
-    # def delete_related_requests(self, instance, **kwargs):
-    #     DesignRequest.objects.filter(category=instance).delete()
 
     def __str__(self):
         return self.category_title

@@ -76,10 +76,10 @@ class RegisterUserForm(forms.ModelForm):
            user.save()
        return user
 
-class ChangeStatus(forms.ModelForm):
-    class Meta:
-        model = DesignRequest
-        fields = ['status']
+# class ChangeStatusCompleted(forms.ModelForm):
+#     class Meta:
+#         model = DesignRequest
+#         fields = ['status', 'image_design']
 
 class RequestForm(forms.ModelForm):
     user = forms.HiddenInput()

@@ -37,7 +37,8 @@
             <p class="card-text">Категория заявки: {{ request.category }}</p>
             <p class="card-text">Статус: {{ request.status }}</p>
 
-            <button type="button" class="btn btn-outline-danger"><a href="{% url 'serv:profile_request_delete' id=request.id %}">Удалить</a></button>
+            <button type="button" class="btn btn-outline-danger">
+                <a href="{% url 'serv:profile_request_delete' id=request.id %}">Удалить</a></button>
         </div>
     </div>
     {% endif %}
@@ -54,7 +55,9 @@
             <p class="card-text">Категория заявки: {{ request.category }}</p>
             <p class="card-text">Статус: {{ request.status }}</p>
 
-            <button type="button" class="btn btn-outline-danger"><a href="{% url 'serv:profile_request_delete' id=request.id %}">Удалить</a></button>
+            <button type="button" class="btn btn-outline-danger">
+                <a href="{% url 'serv:profile_request_delete' id=request.id %}">Удалить</a>
+            </button>
         </div>
     </div>
     {% endif %}
@@ -71,7 +74,9 @@
             <p class="card-text">Категория заявки: {{ request.category }}</p>
             <p class="card-text">Статус: {{ request.status }}</p>
 
-            <button type="button" class="btn btn-outline-danger"><a href="{% url 'serv:profile_request_delete' id=request.id %}">Удалить</a></button>
+            <button type="button" class="btn btn-outline-danger">
+                <a href="{% url 'serv:profile_request_delete' id=request.id %}">Удалить</a>
+            </button>
         </div>
     </div>
     {% endif %}
@@ -88,7 +93,9 @@
             <p class="card-text">Категория заявки: {{ request.category }}</p>
             <p class="card-text">Статус: {{ request.status }}</p>
 
-            <button type="button" class="btn btn-outline-danger"><a href="{% url 'serv:profile_request_delete' id=request.id %}">Удалить</a></button>
+            <button type="button" class="btn btn-outline-danger">
+                <a href="{% url 'serv:profile_request_delete' id=request.id %}">Удалить</a>
+            </button>
         </div>
     </div>
     {% endfor %}

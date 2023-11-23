@@ -2,9 +2,12 @@
 
 {% block content %}
   <h1>Список категорий</h1>
+<button type="button" class="btn btn-outline-primary"><a href="{% url 'serv:add_category' %}">Добавить</a></button>
   <ul>
     {% for category in categories %}
-      <li>{{ category.name }}</li>
+      <li>{{ category.category_title }}
+            <button type="button" class="btn btn-outline-danger"><a href="{% url 'serv:delete_category' id=category.id %}">Удалить</a></button>
+      </li>
     {% endfor %}
   </ul>
 {% endblock %}
