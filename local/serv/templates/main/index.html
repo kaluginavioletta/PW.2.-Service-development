@@ -4,7 +4,7 @@
   <h2>Последние 4 заявки</h2>
   {% for request in design_requests %}
 
-    <div class="card" style="width: 18rem;">
+    <div class="card" style="width: 22rem; margin: 23px;">
         <img src="{{ request.photo.url }}" alt="{{ design_request.title }}" class="card-img-top">
       <div class="card-body">
         <p class="card-text">Дата: {{ request.timestamp }}</p>
@@ -15,8 +15,6 @@
   {% empty %}
     <p>Нет доступных заявок</p>
   {% endfor %}
-    </form>
-
 
   <footer class="mt-3 border-top">
       <small class="p-2">

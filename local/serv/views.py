@@ -6,11 +6,13 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 
 from django.shortcuts import render, redirect
+from django.views import View
+
 from .models import DesignRequest
 
 from django.contrib.auth.views import LoginView
 
-from .forms import forms, LoginUserForm, ChangeStatus
+from .forms import forms, LoginUserForm, CompletedFormStatus, DoneFormStatus
 from .forms import RegisterUserForm, CategoryForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LogoutView
@@ -31,10 +33,8 @@ def index(request):
     return render(request, 'main/index.html', {'design_requests': design_requests,
                                                'in_progress_count': in_progress_count})
 
-
 class LoginUser(ServUser, LoginView):
     template_name = 'main/login.html'
-
 
 @login_required
 def profile(request):
@@ -69,7 +69,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
-
+def all_requests(request):
+    design_requests = DesignRequest.objects.all()
+    return render(request, 'admin/all_requests.html', {'design_requests': design_requests})
 
 @login_required
 def request_add(request):
@@ -79,6 +81,7 @@ def request_add(request):
             design_request = form.save(commit=False)
             design_request.user = request.user
             design_request.save()
+            messages.add_message(request, messages.SUCCESS, 'Заявка добавлена')
             return redirect('serv:profile')
     else:
         form = RequestForm()
@@ -87,7 +90,7 @@ def request_add(request):
 class DeleteRequestView(LoginRequiredMixin, DeleteView):
    pk_url_kwarg = 'id'
    model = DesignRequest
-   template_name = 'requests/category_delete.html'
+   template_name = 'requests/profile_request_delete.html'
    success_url = reverse_lazy('serv:profile')
 
 @login_required
@@ -99,27 +102,37 @@ def request_detail(request, id):
     req = get_object_or_404(DesignRequest, id=id)
     return render(request, 'admin/request_detail.html', {'request': req})
 
+class ChangeStatusToDoneView(View):
+    def get(self, request, id):
+        design_request = DesignRequest.objects.get(id=id)
+        form = DoneFormStatus(instance=design_request)
+        return render(request, 'admin/status_done.html', {'form': form})
 
-def change_status(request):
-    design_request = DesignRequest.objects.filter(status='Новая').first()
-    if design_request:
-        if request.method == 'POST':
-            form = ChangeStatus(request.POST, request.FILES)
-            if form.is_valid():
-                design_request.status = 'Выполнено'
-                design_request.photo = form.cleaned_data['photo']
-                design_request.save()
-                messages.success(request, 'Статус заявки изменен на "Выполнено"')
-                return redirect('serv:change_status')
-            else:
-                form = ChangeStatus()
-            return render(request, 'admin/change_status.html', {'form': form})
-        else:
-            messages.error(request, 'Нельзя изменить статус заявки с другим статусом')
-            return redirect('serv:change_status')
+    def post(self, request, id):
+        design_request = DesignRequest.objects.get(id=id)
+        form = DoneFormStatus(request.POST, request.FILES, instance=design_request)
+        if form.is_valid():
+            design_request.status = 'Выполнено'
+            design_request.image_design = form.cleaned_data['image_design']
+            design_request.save()
+            return redirect('serv:all_requests')
+        return render(request, 'admin/status_done.html', {'form': form})
 
+class ChangeStatusToCompletedView(View):
+    def get(self, request, id):
+        design_request = DesignRequest.objects.get(id=id)
+        form = CompletedFormStatus(instance=design_request)
+        return render(request, 'admin/status_completed.html', {'form': form})
 
-
+    def post(self, request, id):
+        design_request = DesignRequest.objects.get(id=id)
+        form = CompletedFormStatus(request.POST, instance=design_request)
+        if form.is_valid():
+            design_request.status = 'Принято в работу'
+            design_request.comment = form.cleaned_data['comment']
+            design_request.save()
+            return redirect('serv:all_requests')
+        return render(request, 'admin/status_completed.html', {'form': form})
 
 def category_list(request):
     categories = Category.objects.all()
@@ -130,6 +143,7 @@ def add_category(request):
         form = CategoryForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.add_message(request, messages.SUCCESS, 'Категория добавлена')
             return redirect('serv:category_list')
     else:
         form = CategoryForm()
@@ -140,4 +154,3 @@ class DeleteCategoryView(LoginRequiredMixin, DeleteView):
    model = Category
    template_name = 'admin/category_delete.html'
    success_url = reverse_lazy('serv:category_list')
-

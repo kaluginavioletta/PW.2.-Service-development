@@ -41,7 +41,7 @@ class DesignRequest(models.Model):
     category = models.ForeignKey('Category', on_delete=models.CASCADE, null=True)
     photo = models.ImageField(upload_to='design_photos/', validators=[validate_image_file_extension, FileExtensionValidator(['bmp', 'jpg', 'jpeg', 'png'], message='Allowed datatypes: bmp, jpg, jpeg, png')])
     image_design = models.ImageField(upload_to='image_designs/', validators=[validate_image_file_extension, FileExtensionValidator(['bmp', 'jpg', 'jpeg', 'png'], message='Allowed datatypes: bmp, jpg, jpeg, png')], blank=True)
-    desc = models.CharField(max_length=255)
+    desc = models.CharField(max_length=3000)
     choices = (
         ('Новый', 'Новый'),
         ('Принято в работу', 'Принято в работу'),
@@ -50,15 +50,12 @@ class DesignRequest(models.Model):
     status = models.CharField(max_length=20, choices=choices, default='Новый', blank=True)
     comment = models.TextField(max_length=3000, help_text='Введите произвольный комментарий', blank=True)
     user = models.ForeignKey('ServUser', on_delete=models.CASCADE, null=False)
-
     class Meta:
         ordering = ['-timestamp']
 
     def __str__(self):
         return self.title
 
-    def is_completed(self):
-        return self.status == 'Выполнено'
 
 from django.contrib import admin
 class RequestAdmin(admin.ModelAdmin):

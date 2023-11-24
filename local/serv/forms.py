@@ -76,28 +76,49 @@ class RegisterUserForm(forms.ModelForm):
            user.save()
        return user
 
-# class ChangeStatusCompleted(forms.ModelForm):
-#     class Meta:
-#         model = DesignRequest
-#         fields = ['status', 'image_design']
-
 class RequestForm(forms.ModelForm):
     user = forms.HiddenInput()
     class Meta:
        model = DesignRequest
        fields = ['title', 'category', 'desc', 'photo']
-       def save(self, commit=True, user=None):
-           request = super().save(commit=False)
-           request.user = user
-           if commit:
-               request.save()
-           return request
+    def clean_photo(self):
+        photo = self.cleaned_data.get('photo')
+        if photo:
+            if photo.size > 2 * 1024 * 1024:
+                raise forms.ValidationError("Это изображение превышает 2 Мб")
+        return photo
+
+    def save(self, commit=True, user=None):
+        request = super().save(commit=False)
+        request.user = user
+        if commit:
+            request.save()
+        return request
 
 
-# class ChangeRequestForm(forms.ModelForm):
-#     class Meta:
-#         model = DesignRequest
-#         fields = ['status', 'comment', 'photo']
+class DoneFormStatus(forms.ModelForm):
+    class Meta:
+        model = DesignRequest
+        fields = ['image_design']
+
+    def clean_image_design(self):
+        image_design = self.cleaned_data.get('image_design')
+        if image_design:
+            if image_design.size > 2 * 1024 * 1024:
+                raise forms.ValidationError("Это изображение превышает 2 Мб")
+        else:
+            raise forms.ValidationError('Необходимо добавить изображение')
+        return image_design
+
+class CompletedFormStatus(forms.ModelForm):
+    class Meta:
+        model = DesignRequest
+        fields = ['comment']
+    def clean_comment(self):
+        comment = self.cleaned_data.get('comment')
+        if not comment:
+            raise forms.ValidationError('Необходимо написать комментарий')
+        return comment
 
 class CategoryForm(forms.ModelForm):
     class Meta:

@@ -29,7 +29,7 @@
     <h2>Новые заявки</h2>
     {% for request in design_requests %}
     {% if request.status == 'Новый' %}
-    <div class="card" style="width: 18rem;">
+    <div class="card" style="width: 22rem; margin: 23px;">
         <div class="card-body">
             <p class="card-text">Дата: {{ request.timestamp }}</p>
             <p class="card-text">Название: {{ request.title }}</p>
@@ -47,7 +47,7 @@
     <h2>Принятые в работу</h2>
     {% for request in design_requests %}
     {% if request.status == 'Принято в работу' %}
-    <div class="card" style="width: 18rem;">
+    <div class="card" style="width: 22rem; margin: 23px;">
         <div class="card-body">
             <p class="card-text">Дата: {{ request.timestamp }}</p>
             <p class="card-text">Название: {{ request.title }}</p>
@@ -66,7 +66,7 @@
     <h2>Выполненные заявки</h2>
     {% for request in design_requests %}
     {% if request.status == 'Выполнено' %}
-    <div class="card" style="width: 18rem;">
+    <div class="card" style="width: 22rem; margin: 23px;">
         <div class="card-body">
             <p class="card-text">Дата: {{ request.timestamp }}</p>
             <p class="card-text">Название: {{ request.title }}</p>
@@ -84,7 +84,7 @@
 {% else %}
     <h2>Все заявки</h2>
     {% for request in design_requests %}
-    <div class="card" style="width: 18rem;">
+    <div class="card" style="width: 22rem; margin: 23px;">
         <div class="card-body">
             <p>Описание: {{ request.desc }}</p>
             <p class="card-text">Дата: {{ request.timestamp }}</p>
